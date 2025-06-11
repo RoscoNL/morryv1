@@ -1,0 +1,45 @@
+name: WordPress Theme CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Validate composer.json and composer.lock
+      run: |
+        if [ -f "composer.json" ]; then
+          composer validate --strict
+        fi
+    
+    - name: Check PHP syntax
+      run: |
+        find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
+    
+    - name: Create deployment artifact
+      run: |
+        cd wp-content/themes
+        zip -r norvault-theme.zip norvault-theme/ -x "*.git*" "*node_modules*" "*.DS_Store"
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: theme-package
+        path: wp-content/themes/norvault-theme.zip
+        
+    # Note: Voor automatische deployment naar 10Web:
+    # 1. Gebruik 10Web's ingebouwde Git Deploy functie
+    # 2. Of gebruik een FTP deploy action met je SFTP credentials
+    # 3. Of gebruik de WordPress.org deployment action als je het daar publiceert

@@ -1,0 +1,21 @@
+{
+  "name": "norvault-theme",
+  "version": "1.0.0",
+  "description": "Norvault Security WordPress Theme",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "echo 'CSS already built'",
+    "build:js": "echo 'JS already built'",
+    "watch": "echo 'Watch mode not configured'"
+  },
+  "keywords": [
+    "wordpress",
+    "theme",
+    "security"
+  ],
+  "author": "Norvault Security",
+  "license": "Proprietary",
+  "devDependencies": {},
+  "dependencies": {}
+}
