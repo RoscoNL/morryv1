@@ -180,7 +180,7 @@ get_header(); ?>
                 array(
                     'icon' => 'bi-shield-fill-check',
                     'title' => 'Jaarlijkse risicoanalyse',
-                    'description' => 'We analyseren risico's, vertalen ze naar concrete maatregelen en leggen het vast in een bruikbaar managementrapportage.',
+                    'description' => 'We analyseren risico\'s, vertalen ze naar concrete maatregelen en leggen het vast in een bruikbaar managementrapportage.',
                     'link' => '#'
                 ),
                 array(
