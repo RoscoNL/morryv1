@@ -53,31 +53,16 @@ add_action('after_setup_theme', 'norvault_theme_setup');
  * Enqueue Scripts and Styles
  */
 function norvault_enqueue_scripts() {
-    // Preconnect to external domains for performance
-    echo '<link rel="preconnect" href="https://fonts.googleapis.com">';
-    echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
-    echo '<link rel="preconnect" href="https://cdn.jsdelivr.net">';
+    // Theme stylesheet
+    wp_enqueue_style('norvault-style', get_stylesheet_uri(), array(), wp_get_theme()->get('Version'));
     
-    // Google Fonts - Inter
-    wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap', array(), null);
-    
-    // Bootstrap CSS
+    // Bootstrap CSS via CDN
     wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
     
-    // Bootstrap Icons
-    wp_enqueue_style('bootstrap-icons', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css', array(), '1.11.3');
-    
-    // Animate CSS
-    wp_enqueue_style('animate', 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css', array(), '4.1.1');
-    
-    // AOS CSS
-    wp_enqueue_style('aos', 'https://unpkg.com/aos@2.3.4/dist/aos.css', array(), '2.3.4');
-    
-    // Theme stylesheet
-    wp_enqueue_style('norvault-style', get_stylesheet_uri(), array('bootstrap'), wp_get_theme()->get('Version'));
-    
     // Custom CSS
-    wp_enqueue_style('norvault-custom', get_template_directory_uri() . '/assets/css/custom.css', array('norvault-style'), wp_get_theme()->get('Version'));
+    if (file_exists(get_template_directory() . '/assets/css/custom.css')) {
+        wp_enqueue_style('norvault-custom', get_template_directory_uri() . '/assets/css/custom.css', array('norvault-style'), wp_get_theme()->get('Version'));
+    }
     
     // jQuery (WordPress includes it)
     wp_enqueue_script('jquery');
@@ -85,35 +70,10 @@ function norvault_enqueue_scripts() {
     // Bootstrap JS
     wp_enqueue_script('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), '5.3.3', true);
     
-    // Particles.js
-    wp_enqueue_script('particles', 'https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js', array(), '2.0.0', true);
-    
-    // AOS JS
-    wp_enqueue_script('aos', 'https://unpkg.com/aos@2.3.4/dist/aos.js', array(), '2.3.4', true);
-    
-    // jQuery Easing
-    wp_enqueue_script('jquery-easing', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js', array('jquery'), '1.4.1', true);
-    
     // Custom scripts
-    wp_enqueue_script('norvault-script', get_template_directory_uri() . '/assets/js/main.js', array('jquery', 'bootstrap', 'aos', 'particles', 'jquery-easing'), wp_get_theme()->get('Version'), true);
-    
-    // Localize script for AJAX
-    wp_localize_script('norvault-script', 'norvault_ajax', array(
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('norvault_nonce'),
-        'site_url' => home_url(),
-        'theme_url' => get_template_directory_uri()
-    ));
-    
-    // Inline critical CSS for above-the-fold content
-    $critical_css = '
-        body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:0}
-        .hero-section{min-height:100vh;background:linear-gradient(135deg,#0A0E27 0%,#1a1f3a 100%);color:#fff}
-        .navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);position:sticky;top:0;z-index:999}
-        .btn{font-weight:600;padding:0.75rem 2rem;border-radius:50px;transition:all 0.3s ease}
-        .page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;display:flex;align-items:center;justify-content:center;z-index:9999}
-    ';
-    wp_add_inline_style('norvault-custom', $critical_css);
+    if (file_exists(get_template_directory() . '/assets/js/main.js')) {
+        wp_enqueue_script('norvault-script', get_template_directory_uri() . '/assets/js/main.js', array('jquery', 'bootstrap'), wp_get_theme()->get('Version'), true);
+    }
 }
 add_action('wp_enqueue_scripts', 'norvault_enqueue_scripts');
 
@@ -144,57 +104,9 @@ function norvault_widgets_init() {
 add_action('widgets_init', 'norvault_widgets_init');
 
 /**
- * Custom Walker for Bootstrap Navigation
+ * Include Bootstrap Walker Nav Menu
  */
-class Bootstrap_Walker_Nav_Menu extends Walker_Nav_Menu {
-    public function start_lvl(&$output, $depth = 0, $args = null) {
-        $indent = str_repeat("\t", $depth);
-        $output .= "\n$indent<ul class=\"dropdown-menu\">\n";
-    }
-
-    public function start_el(&$output, $item, $depth = 0, $args = null, $id = 0) {
-        $indent = ($depth) ? str_repeat("\t", $depth) : '';
-
-        $classes = empty($item->classes) ? array() : (array) $item->classes;
-        $classes[] = 'nav-item';
-
-        if (in_array('menu-item-has-children', $classes)) {
-            $classes[] = 'dropdown';
-        }
-
-        $class_names = join(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item, $args));
-        $class_names = $class_names ? ' class="' . esc_attr($class_names) . '"' : '';
-
-        $id = apply_filters('nav_menu_item_id', 'menu-item-'. $item->ID, $item, $args);
-        $id = $id ? ' id="' . esc_attr($id) . '"' : '';
-
-        $output .= $indent . '<li' . $id . $class_names .'>';
-
-        $attributes = ! empty($item->attr_title) ? ' title="' . esc_attr($item->attr_title) .'"' : '';
-        $attributes .= ! empty($item->target) ? ' target="' . esc_attr($item->target) .'"' : '';
-        $attributes .= ! empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) .'"' : '';
-        $attributes .= ! empty($item->url) ? ' href="' . esc_attr($item->url) .'"' : '';
-
-        if ($depth === 0) {
-            $attributes .= ' class="nav-link"';
-        } else {
-            $attributes .= ' class="dropdown-item"';
-        }
-
-        if (in_array('menu-item-has-children', $classes)) {
-            $attributes .= ' data-bs-toggle="dropdown" role="button" aria-expanded="false"';
-            $attributes = str_replace('nav-link', 'nav-link dropdown-toggle', $attributes);
-        }
-
-        $item_output = $args->before;
-        $item_output .= '<a'. $attributes .'>';
-        $item_output .= $args->link_before . apply_filters('the_title', $item->title, $item->ID) . $args->link_after;
-        $item_output .= '</a>';
-        $item_output .= $args->after;
-
-        $output .= apply_filters('walker_nav_menu_start_el', $item_output, $item, $depth, $args);
-    }
-}
+require_once get_template_directory() . '/inc/class-bootstrap-walker.php';
 
 /**
  * Custom Post Types
