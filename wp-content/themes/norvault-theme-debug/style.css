@@ -1,0 +1,22 @@
+/*
+Theme Name: Norvault Security Theme DEBUG
+Theme URI: https://norvault.security
+Author: Norvault Security
+Author URI: https://norvault.security
+Description: DEBUG versie - Een professionele WordPress thema voor Norvault Security
+Version: 1.0.1
+License: GPL v2 or later
+Text Domain: norvault
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
