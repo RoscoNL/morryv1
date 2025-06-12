@@ -89,9 +89,27 @@ h1, h2, h3, h4, h5, h6 {
 .navbar-brand {
   font-size: 1.5rem;
   font-weight: 800;
+  text-decoration: none;
+  transition: all var(--transition-normal);
+}
+
+.navbar-brand:hover {
+  transform: translateY(-2px);
+}
+
+.navbar-brand svg {
+  transition: all var(--transition-normal);
+}
+
+.navbar-brand:hover svg {
+  transform: rotate(-5deg) scale(1.1);
+}
+
+.navbar-brand .gradient-text {
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .nav-link {
@@ -979,6 +997,183 @@ section .lead {
 .trust-badge i {
   color: var(--success);
   font-size: 1.25rem;
+}
+
+/* === STEP NUMBERS === */
+.step-number {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 40px;
+  height: 40px;
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  box-shadow: var(--shadow-md);
+}
+
+.step-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--light);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+}
+
+.step-icon:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+/* === FLOATING BADGE === */
+.floating-badge {
+  animation: float-badge 3s ease-in-out infinite;
+}
+
+@keyframes float-badge {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.floating-badge .badge {
+  box-shadow: var(--shadow-xl);
+}
+
+/* === FEATURE LIST === */
+.feature-list .feature-icon-small {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* === BG LIGHT SECTION === */
+.bg-light {
+  background-color: #F9FAFB !important;
+}
+
+/* === TEAM SECTION === */
+.team-card {
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.team-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.team-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all var(--transition-normal);
+}
+
+.team-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.team-card:hover .team-overlay {
+  opacity: 0.9;
+}
+
+.team-card:hover .team-image img {
+  transform: scale(1.1);
+}
+
+.team-social a {
+  color: white;
+  font-size: 1.5rem;
+  transition: all var(--transition-fast);
+}
+
+.team-social a:hover {
+  transform: translateY(-3px);
+}
+
+/* === CASE STUDY STYLES === */
+.case-study {
+  margin-bottom: 5rem;
+}
+
+.case-study img {
+  transition: transform var(--transition-normal);
+}
+
+.case-study:hover img {
+  transform: scale(1.02);
+}
+
+/* === CAROUSEL CONTROLS === */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 50px;
+  height: 50px;
+  background: rgba(0, 82, 204, 0.1);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-control-prev {
+  left: -60px;
+}
+
+.carousel-control-next {
+  right: -60px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 991px) {
+  .carousel-control-prev {
+    left: -30px;
+  }
+  
+  .carousel-control-next {
+    right: -30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .carousel-control-prev,
+  .carousel-control-next {
+    display: none;
+  }
 }
 
 /* === PERFORMANCE OPTIMIZATIONS === */
