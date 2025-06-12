@@ -1,0 +1,75 @@
+name: Deploy to 10Web (Fixed)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup SSH Known Hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H -p ${{ secrets.TENWEB_SFTP_PORT }} ${{ secrets.TENWEB_SFTP_HOST }} >> ~/.ssh/known_hosts
+    
+    - name: Install lftp
+      run: sudo apt-get update && sudo apt-get install -y lftp
+    
+    - name: Deploy Theme via LFTP
+      env:
+        SFTP_HOST: ${{ secrets.TENWEB_SFTP_HOST }}
+        SFTP_USER: ${{ secrets.TENWEB_SFTP_USER }}
+        SFTP_PASS: ${{ secrets.TENWEB_SFTP_PASSWORD }}
+        SFTP_PORT: ${{ secrets.TENWEB_SFTP_PORT }}
+      run: |
+        echo "Starting deployment..."
+        lftp -c "
+        set sftp:auto-confirm yes
+        set ssl:verify-certificate false
+        set net:timeout 30
+        set net:max-retries 3
+        set net:reconnect-interval-base 5
+        open sftp://$SFTP_USER:$SFTP_PASS@$SFTP_HOST:$SFTP_PORT
+        cd /public_html/wp-content/themes/
+        mirror -R --delete --verbose --parallel=3 ./wp-content/themes/norvault-theme/ norvault-theme/
+        bye
+        "
+    
+    - name: Flush WordPress Permalinks
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.TENWEB_SFTP_HOST }}
+        username: ${{ secrets.TENWEB_SFTP_USER }}
+        password: ${{ secrets.TENWEB_SFTP_PASSWORD }}
+        port: ${{ secrets.TENWEB_SFTP_PORT }}
+        script: |
+          cd public_html
+          # Create permalinks flush script
+          cat > flush-permalinks.php << 'EOF'
+          <?php
+          define('WP_USE_THEMES', false);
+          require_once('wp-load.php');
+          
+          // Flush rewrite rules
+          flush_rewrite_rules(true);
+          
+          // Also update .htaccess
+          global $wp_rewrite;
+          $wp_rewrite->flush_rules(true);
+          
+          echo "Permalinks and .htaccess updated successfully!\n";
+          ?>
+          EOF
+          
+          # Run the script
+          php flush-permalinks.php
+          
+          # Clean up
+          rm -f flush-permalinks.php
+          
+          echo "Deployment completed!"
