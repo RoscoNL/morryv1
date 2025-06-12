@@ -11,13 +11,13 @@ get_header(); ?>
 <section class="hero-section position-relative overflow-hidden">
     <div id="particles-js" class="position-absolute w-100 h-100"></div>
     <div class="hero-gradient-overlay"></div>
-    <div class="container position-relative z-index-10">
+    <div class="container position-relative" style="z-index: 10;">
         <div class="row min-vh-100 align-items-center">
-            <div class="col-lg-8 mx-auto text-center text-white">
-                <h1 class="display-1 fw-bold mb-4 hero-title" data-aos="fade-up" data-aos-duration="1000">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-1 fw-bold mb-4 hero-title text-dark" data-aos="fade-up" data-aos-duration="1000">
                     <span class="gradient-text"><?php echo norvault_get_string('Jouw betrouwbare partner in informatiebeveiliging.'); ?></span>
                 </h1>
-                <p class="lead fs-4 mb-5 hero-subtitle" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
+                <p class="lead fs-4 mb-5 hero-subtitle text-dark" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
                     <?php echo norvault_get_string('Onze vCISO-dienst helpt je moeiteloos te voldoen aan ISO 27001 en NIS2. Voor bedrijven die slim willen beveiligen – zonder onnodige kosten.'); ?>
                 </p>
                 <div data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
@@ -25,7 +25,7 @@ get_header(); ?>
                         <span class="btn-text"><?php echo norvault_get_string('Ontvang vrijblijvend advies'); ?></span>
                         <span class="btn-hover-effect"></span>
                     </a>
-                    <a href="#diensten" class="btn btn-outline-light btn-lg px-5 py-3 mb-3">
+                    <a href="#diensten" class="btn btn-outline-primary btn-lg px-5 py-3 mb-3">
                         <?php _e('Ontdek onze diensten', 'norvault'); ?>
                     </a>
                 </div>

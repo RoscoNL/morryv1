@@ -40,7 +40,7 @@
                         }
                     },
                     color: {
-                        value: ['#ffffff', '#00D4AA', '#667eea']
+                        value: ['#8B5CF6', '#EC4899', '#F59E0B', '#3B82F6']
                     },
                     shape: {
                         type: 'circle'
@@ -68,7 +68,7 @@
                     line_linked: {
                         enable: true,
                         distance: 150,
-                        color: '#ffffff',
+                        color: '#8B5CF6',
                         opacity: 0.2,
                         width: 1
                     },
@@ -165,11 +165,11 @@
             animateElements.forEach(el => observer.observe(el));
         }
         
-        // Parallax effects
+        // Parallax effects - only for floating shapes, not hero section
         $(window).on('scroll', throttle(function() {
             const scrolled = $(window).scrollTop();
             
-            $('.hero-section').css('transform', `translateY(${scrolled * 0.5}px)`);
+            // Removed hero-section parallax to prevent text overlap
             $('.floating-shapes .shape').each(function(index) {
                 const speed = 0.5 + (index * 0.2);
                 $(this).css('transform', `translateY(${scrolled * -speed}px)`);
