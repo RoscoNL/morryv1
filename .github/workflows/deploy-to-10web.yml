@@ -1,51 +1,48 @@
-name: WordPress Theme CI
+name: Deploy to 10Web
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Deploy to 10Web via SFTP
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
-        node-version: '18'
-    
-    # Skip composer validation for now
-    # - name: Validate composer.json and composer.lock
-    #   run: |
-    #     if [ -f "composer.json" ]; then
-    #       composer validate --strict
-    #     fi
-    
-    - name: Check PHP syntax
-      run: |
-        find . -name "*.php" -not -path "./vendor/*" -not -path "./.git/*" -print0 | xargs -0 -n1 php -l || true
-    
-    - name: Create deployment artifact
-      run: |
-        cd wp-content/themes
-        if [ -d "norvault-theme" ]; then
-          zip -r norvault-theme.zip norvault-theme/ -x "*.git*" "*node_modules*" "*.DS_Store"
-        else
-          echo "Theme directory not found"
-        fi
-        
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
+        username: ${{ secrets.TENWEB_SFTP_USER }}
+        server: ${{ secrets.TENWEB_SFTP_HOST }}
+        password: ${{ secrets.TENWEB_SFTP_PASSWORD }}
+        port: ${{ secrets.TENWEB_SFTP_PORT }}
+        local_path: './*'
+        remote_path: '/public_html/wp-content/themes/norvault-theme/'
+        sftp_only: true
+
+    - name: Create Permalinks Fix Script
+      uses: appleboy/ssh-action@v0.1.5
       with:
-        name: theme-package
-        path: wp-content/themes/norvault-theme.zip
-        if-no-files-found: ignore
-        
-    # Note: Voor automatische deployment naar 10Web:
-    # 1. Gebruik 10Web's ingebouwde Git Deploy functie
-    # 2. Of gebruik een FTP deploy action met je SFTP credentials
-    # 3. Of gebruik de WordPress.org deployment action als je het daar publiceert
+        host: ${{ secrets.TENWEB_SFTP_HOST }}
+        username: ${{ secrets.TENWEB_SFTP_USER }}
+        password: ${{ secrets.TENWEB_SFTP_PASSWORD }}
+        port: ${{ secrets.TENWEB_SFTP_PORT }}
+        script: |
+          cd public_html
+          # Create fix script
+          cat > fix-permalinks.php << 'EOF'
+          <?php
+          require_once('wp-load.php');
+          flush_rewrite_rules(true);
+          echo "Permalinks geflusht!";
+          ?>
+          EOF
+          
+          # Run it via PHP
+          php fix-permalinks.php
+          
+          # Clean up
+          rm -f fix-permalinks.php
